@@ -6,4 +6,4 @@ CONFIG -= qt
 SOURCES += \
         main.cpp
 
-LIBS += -lglfw -lGLEW
+LIBS += -lGL -lGLEW -lglfw
