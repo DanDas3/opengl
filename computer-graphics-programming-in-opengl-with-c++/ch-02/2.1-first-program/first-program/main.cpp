@@ -8,9 +8,59 @@ using namespace std;
 
 GLuint renderingProgram;
 GLuint vao[numVAOs];
+/**
+  Checking errors
+*/
+void printShaderLog(GLuint shader)
+{
+    int len = 0;
+    int chWrittn = 0;
+    char *log;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
 
+    if (len > 0)
+    {
+        log = (char*) malloc(len);
+        glGetShaderInfoLog(shader, len, &chWrittn, log);
+        cout << "Shader Info Log: " << log << endl;
+        free(log);
+    }
+}
+
+void printProgramLog(int prog)
+{
+    int len = 0;
+    int chrWrittn = 0;
+    char *log;
+
+    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &len);
+    if(len > 0)
+    {
+        log = (char*) malloc(len);
+        glGetProgramInfoLog(prog, len, &chrWrittn, log);
+        cout << "Program Info Log: " << log << endl;
+        free(log);
+    }
+}
+
+bool checkOpenGLError()
+{
+    bool foundError = false;
+    int glErr = glGetError();
+
+    while(glErr != GL_NO_ERROR)
+    {
+        cout << "glError: " << glErr << endl;
+        foundError = true;
+        glErr = glGetError();
+    }
+    return foundError;
+}
 GLuint createShaderProgram()
 {
+    GLint vertCompiled;
+    GLint fragCompiled;
+    GLint linked;
     const char *vshaderSource =
             "void main(void)\n"
             "gl_Position = vec4(0.0,0.0,0.0,1.0);";
@@ -26,13 +76,37 @@ GLuint createShaderProgram()
     glShaderSource(vShader, 1, &vshaderSource, NULL);
     glShaderSource(fShader, 1 , &fshaderSource, NULL);
     glCompileShader(vShader);
+    // Catch errors
+    checkOpenGLError();
+    glGetShaderiv(vShader, GL_COMPILE_STATUS, &vertCompiled);
+    if(vertCompiled != 1)
+    {
+        cout << "Vertex compilation failed!" << endl;
+        printShaderLog(vShader);
+    }
     glCompileShader(fShader);
+    // Catch errors
+    checkOpenGLError();
+    glGetShaderiv(fShader, GL_COMPILE_STATUS, &fragCompiled);
+    if(fragCompiled != 1)
+    {
+        cout << "Fragment shader compilation failed!" << endl;
+        printShaderLog(fShader);
+    }
 
     GLuint vfProgram = glCreateProgram();
     glAttachShader(vfProgram, vShader);
     glAttachShader(vfProgram, fShader);
     glLinkProgram(vfProgram);
 
+    // Catch errors while linking shader
+    checkOpenGLError();
+    glGetProgramiv(vfProgram, GL_LINK_STATUS, &linked);
+    if(linked != 1)
+    {
+        cout << "Linking failed!" << endl;
+        printProgramLog(vfProgram);
+    }
     return vfProgram;
 }
 void init(GLFWwindow *window)
