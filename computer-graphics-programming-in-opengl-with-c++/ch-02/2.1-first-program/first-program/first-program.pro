@@ -6,7 +6,15 @@ CONFIG -= qt
 SOURCES += \
         main.cpp
 
-LIBS += -lGL -lGLEW -lglfw
+win32 {
+    INCLUDEPATH += "C:\Users\danil\Documents\Programacao\libs\include"
+    LIBS += -lopengl32 -lglew32 -lglfw3
+}
+
+unix {
+    LIBS += -lGL -lGLEW -lglfw
+}
+
 
 DISTFILES += \
     shaders/fragShader.frag \
