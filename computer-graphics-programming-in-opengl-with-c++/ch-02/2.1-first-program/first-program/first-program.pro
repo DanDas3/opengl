@@ -10,4 +10,5 @@ LIBS += -lGL -lGLEW -lglfw
 
 DISTFILES += \
     shaders/fragShader.frag \
+    shaders/triangleVertShader.vert \
     shaders/vertShader.vert
