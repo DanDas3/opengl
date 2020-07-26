@@ -7,3 +7,7 @@ SOURCES += \
         main.cpp
 
 LIBS += -lGL -lGLEW -lglfw
+
+DISTFILES += \
+    shaders/fragShader.frag \
+    shaders/vertShader.vert

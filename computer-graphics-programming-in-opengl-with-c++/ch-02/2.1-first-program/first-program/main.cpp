@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+#include <iostream>
+#include <fstream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -8,6 +11,26 @@ using namespace std;
 
 GLuint renderingProgram;
 GLuint vao[numVAOs];
+
+/**
+  Reading shaders from a file
+*/
+string readShaderSource(const char *filePath)
+{
+    string content;
+    ifstream fileStream(filePath, ios::in);
+    string line = "";
+
+    while (!fileStream.eof())
+    {
+        getline(fileStream, line);
+        content.append(line + "\n");
+    }
+
+    fileStream.close();
+    return content;
+}
+
 /**
   Checking errors
 */
@@ -61,20 +84,27 @@ GLuint createShaderProgram()
     GLint vertCompiled;
     GLint fragCompiled;
     GLint linked;
-    const char *vshaderSource =
-            "void main(void)\n"
-            "gl_Position = vec4(0.0,0.0,0.0,1.0);";
+    string vertShaderStr = readShaderSource("../first-program/shaders/vertShader.vert");
+    string fragShaderStr = readShaderSource("../first-program/shaders/fragShader.frag");
+    const char *vertShaderSrc = vertShaderStr.c_str();
+    const char *fragShaderSrc = fragShaderSrc = fragShaderStr.c_str();
 
-    const char *fshaderSource =
-            "out vec4 color;\n"
-            "void main(void)\n"
-            "{if(gl_FragCoord.x < 200) color = vec4(1.0,0.0,0.0,1.0)); else color = vec4(0.0,0.0,1.0,1.0);}";
+//    const char *vshaderSource =
+//            "void main(void)\n"
+//            "gl_Position = vec4(0.0,0.0,0.0,1.0);";
+
+//    const char *fshaderSource =
+//            "out vec4 color;\n"
+//            "void main(void)\n"
+//            "{if(gl_FragCoord.x < 200) color = vec4(1.0,0.0,0.0,1.0)); else color = vec4(0.0,0.0,1.0,1.0);}";
 
     GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    glShaderSource(vShader, 1, &vshaderSource, NULL);
-    glShaderSource(fShader, 1 , &fshaderSource, NULL);
+//    glShaderSource(vShader, 1, &vshaderSource, NULL);
+//    glShaderSource(fShader, 1 , &fshaderSource, NULL);
+    glShaderSource(vShader, 1, &vertShaderSrc, NULL);
+    glShaderSource(fShader, 1 , &fragShaderSrc, NULL);
     glCompileShader(vShader);
     // Catch errors
     checkOpenGLError();
@@ -144,6 +174,7 @@ int main()
     }
 
     glfwSwapInterval(1);
+    init(window);
 
     while (!glfwWindowShouldClose(window))
     {
