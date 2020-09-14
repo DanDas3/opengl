@@ -1,0 +1,5 @@
+# Build directory
+out
+
+# VisualStudio config
+.vs
